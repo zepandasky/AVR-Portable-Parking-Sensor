@@ -59,6 +59,7 @@ int main(void){
         PORTB |= (1 << PB1);
         _delay_us(10);
         PORTB &= ~(1 << PB1);
+        int a;
 
         int16_t countA = ((pulse * 4) * 0.0340)/2; /*Calculate distance to object*/
         
