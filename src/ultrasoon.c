@@ -24,6 +24,7 @@
 
 volatile unsigned int pulse;
 volatile int overflow_counter = 0;
+volatile int i = 0;
 
 
 void initUsart()
@@ -42,16 +43,18 @@ void transmitByte(uint8_t data){
 
 int main(void){
     initUsart();
-    DDRB |= (1<<PB1) | (1 << PB3); /*PB1 als output instellen voor triggerpin*/
-    DDRD &= ~(1<<PD4); /*PB0 als input pin*/
+    DDRB |= (1<<PB1) | (1 << PB3); /*PB1, PB3 als output instellen voor triggerpin*/
+    DDRD &= ~(1<<PD4); /*PD4 als input pin*/
 
-    PORTD  |= (1 << PD4); /*Enable pull up resistor*/
+    PORTD  |= (1 << PD4);   /*Enable pull up resistor*/
     EICRA  |= (1 << ISC00); /*enable interrupt on any logical change on pin */
     EIMSK  |= (1 << INT0);
     sei(); /*enable global interrupts*/
 
-    TCCR2B |= (1 << CS22) | (1 << CS21) | (1 << CS20); /*Set 1024 prescalar*/
+    OCR2A = 100;
+    TCCR2A |= (1 << COM2A0);
     TIMSK2 |= (1 << TOIE2); /*Enables timer overflow interrupt*/
+    TCCR2B |= (1 << CS21); /*Set 8 prescalar*/
 
     while(1){ 
         /*Read Ultrasonic sensor values*/ 
@@ -69,38 +72,20 @@ int main(void){
         //     transmitByte(buffer[i]);
         
         // transmitByte('\n'); /*Print on new line*/
-        // transmitByte('\r'); /*Print on beginning of new line*/
-
-
-
+        // transmitByte('\r'); /*Print on beginning of new line*
     }
 }
 ISR(TIMER2_OVF_vect)
 {
+    if(overflow_counter == 5000 && i == 1)
+    {
+        TCCR2B &= ~(1 << CS21); /*Set 8 prescalar*/
+        overflow_counter = 0;
+        i = 0;
+    }
     overflow_counter++;
 
-    volatile int i = 0;
-    if(overflow_counter == 61 && i == 1)
-    {
-        TCCR2B &= ~(1 << CS22);
-        TCCR2B &= ~(1 << CS21);
-        TCCR2B &= ~(1 << CS20);
-    }
-    if(overflow_counter == 61 && i == 0)
-    {
-        TCCR2B |= (1 << CS22) | (1 << CS21) | (1 << CS20); /*Set 1024 prescalar*/
-        overflow_counter = 0;
-        i = 1;
-    }
-
-    char buffer[sizeof(unsigned int)];
-    itoa(overflow_counter,buffer,10);
-    for(int i =0; i < sizeof(buffer); i++)
-        transmitByte(buffer[i]);
-    
-    transmitByte('\n'); /*Print on new line*/
-    transmitByte('\r'); /*Print on beginning of new line*/
-   
+    /*WERKT NIET WANT JE STOP DE TIMER IN INTERRUPT*/
 }
 ISR(INT0_vect){
     static volatile int i = 0;
