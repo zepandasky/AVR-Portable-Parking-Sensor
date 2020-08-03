@@ -25,6 +25,7 @@
 volatile unsigned int pulse;
 volatile int overflow_counter = 0;
 volatile int i = 0;
+volatile int check_flag = false;
 
 
 void initUsart()
@@ -65,6 +66,11 @@ int main(void){
 
         int16_t countA = ((pulse * 4) * 0.0340)/2; /*Calculate distance to object*/
         
+        if(check_flag = true){
+            TCCR2B |= (1 << CS21); /*Set 8 prescalar*/
+            _delay_ms(1000);
+        }
+            
         /*prints distance to object*/
         // char buffer[sizeof(unsigned int)];
         // itoa(countA,buffer,10);
@@ -77,11 +83,12 @@ int main(void){
 }
 ISR(TIMER2_OVF_vect)
 {
-    if(overflow_counter == 5000 && i == 1)
+    if(overflow_counter == 5000)
     {
         TCCR2B &= ~(1 << CS21); /*Set 8 prescalar*/
         overflow_counter = 0;
-        i = 0;
+        TCNT2 = 0;
+        check_flag = true;
     }
     overflow_counter++;
 
