@@ -1,0 +1,4 @@
+ ROOD = 5V
+ WIT = RX
+ GROEN = TX
+ ZWART = GND
