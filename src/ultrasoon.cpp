@@ -23,11 +23,10 @@ volatile unsigned int pulseInUs = 0;
 volatile unsigned char edge = 0;
 volatile int done = 0;
 
-
 void initUsart()
 {
-    UCSR0B |= (1 << TXEN0) | (1<<RXEN0);
-    UCSR0C |= (1<<UCSZ00) | (1<<UCSZ01); //8 bit character size
+    UCSR0B |= (1 << TXEN0) | (1 << RXEN0);
+    UCSR0C |= (1 << UCSZ00) | (1 << UCSZ01); //8 bit character size
     UBRR0H = UBRRH_VALUE;
     UBRR0L = UBRRL_VALUE;
 }
