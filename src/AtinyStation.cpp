@@ -2,6 +2,7 @@
  AUTHOR: Zep Holleman
  Upload command: avrdude -c usbasp -B 5 -pt85 -U flash:w:firmware.hex
  firmware hex is in the directory .pio/build/ATiny85
+ ATtiny attempt to use as receiving station for connection to the back of the car to the ultrasonic sensor
 */
 
 #include <avr/io.h>
