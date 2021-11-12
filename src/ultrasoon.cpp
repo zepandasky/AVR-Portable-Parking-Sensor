@@ -1,3 +1,5 @@
+/* Code for the atmega328p connected to the ultrasonic sensor */
+
 #ifndef BAUD
 #define BAUD 9600
 #endif
